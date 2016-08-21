@@ -10,6 +10,7 @@ namespace Kiwi
 {
     class Program
     {
+        [STAThread]
         static void Main(string[] args)
         {
             ContextMenuStrip menu = null;
