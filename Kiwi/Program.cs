@@ -15,15 +15,7 @@ namespace Kiwi
             ContextMenuStrip menu = null;
             int tick = System.Environment.TickCount;
 
-            try
-            {
-                menu = MenuCreator.Creator("config.xml");
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message, "EXCEPTION");
-                return;
-            }
+            menu = MenuCreator.Creator("config.xml");
 
             menu.Items.Add(new ToolStripSeparator());
             menu.Items.Add(MenuCreator.GetDisabledMenuItem(string.Format("{0} ms", System.Environment.TickCount - tick)));

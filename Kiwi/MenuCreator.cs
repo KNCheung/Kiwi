@@ -11,39 +11,39 @@ namespace Kiwi
 {
     class MenuCreator
     {
+        private static XmlDocument config = new XmlDocument();
+
         internal static ContextMenuStrip Creator(string configFileName)
         {
-            ContextMenuStrip menu = new ContextMenuStrip();
-            XmlDocument config = new XmlDocument();
 
             config.Load(configFileName);
 
-            XmlNode mainNode = null;
-            foreach (XmlNode x in config.SelectNodes("/kiwi/menu"))
-                if (x.Attributes["name"].Value.ToLower() == "main")
-                {
-                    mainNode = x;
-                    break;
-                }
+            XmlNode mainNode = config.SelectSingleNode("/kiwi/menu[@name='main']");
             if (mainNode == null)
                 throw new Exception("\"main\" node not found");
-            foreach (XmlNode x in mainNode.ChildNodes)
+
+            return CreateMenu(mainNode);
+        }
+
+        private static ContextMenuStrip CreateMenu(XmlNode menuNode)
+        {
+            ContextMenuStrip menu = new ContextMenuStrip();
+            menu.Text = menuNode.Attributes["name"].Value;
+            foreach (XmlNode x in menuNode.ChildNodes)
             {
                 menu.Items.Add(GetMenuItem(x));
             }
-
             return menu;
         }
 
-        static private ToolStripItem GetMenuItem(XmlNode item)
+        private static ToolStripItem GetMenuItem(XmlNode item)
         {
             ToolStripMenuItem menuItem = new ToolStripMenuItem();
-            Console.WriteLine(item.Attributes["type"].Value);
             switch (item.Attributes["type"].Value.ToLower())
             {
                 case "text":
                     {
-                        menuItem.Text = item.SelectSingleNode("./text").InnerText;
+                        menuItem.Text = item.Attributes["name"].Value;
                         menuItem.Enabled = false;
                         break;
                     }
@@ -53,8 +53,24 @@ namespace Kiwi
                     }
                 case "action":
                     {
-                        menuItem.Text = item.SelectSingleNode("./text").InnerText;
+                        menuItem.Text = item.Attributes["name"].Value;
                         menuItem.Click += (obj, args) => Actions.ActionHandler(item.SelectSingleNode("./action").InnerText);
+                        break;
+                    }
+                case "submenu":
+                    {
+                        menuItem.DropDown = CreateMenu(item);
+                        menuItem.Text = menuItem.DropDown.Text;
+                        break;
+                    }
+                case "menu":
+                    {
+                        string name = item.Attributes["name"].Value;
+                        XmlNode mainNode = config.SelectSingleNode("/kiwi/menu[@name='" + name + "']");
+                        if (mainNode == null)
+                            throw new Exception("\"" + name + "\" node not found");
+                        menuItem.DropDown = CreateMenu(mainNode);
+                        menuItem.Text = name;
                         break;
                     }
             }

@@ -1,11 +1,27 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <kiwi>
-  <menu name="fain">
-    <item type="text">
-      <text>Hello</text>
+  <menu name="main">
+    <item type="text" name="Hello">
     </item>
-    <item type="text">
-      <text>World</text>
+    <item type="text" name="World">
     </item>
+    <item type="seperator"/>
+    <item type="action" name="action">
+      <action>hello</action>
+    </item>
+    <item type="seperator"/>
+    <item type="submenu" name="submenu">
+      <item type="text" name="Hallo">
+      </item>
+      <item type="text" name="Welt">
+      </item>
+      <item type="seperator"/>
+      <item type="menu" name="子菜单"></item>
+    </item>
+    <item type="menu" name="子菜单"></item>
+  </menu>
+  <menu name="子菜单">
+    <item type="text" name="你好"></item>
+    <item type="text" name="世界"></item>
   </menu>
 </kiwi>
